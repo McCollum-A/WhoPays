@@ -1,7 +1,8 @@
 # Andrew McCollum, 2020
-# WhoPays? Gui Prototype
+# WhoPays? Gui Prototype. Once this works with an interface, I will move on to actual mobil wireframes
 
-# this file is not yet complete
+# this file is not yet complete. The new math seems to be working well for even splits.
+# next working on the math ideas for custom splits
 
 import math
 import tkinter as tk
@@ -16,22 +17,26 @@ def RoundItUp(number):
 
 
 def EvenSplit(bill: float, tip: float, peoples: float):
-    # add tip % to bill, then div by peeps
-    tip_per = ((100 + tip) / 100)
-    final_cost = (bill * tip_per)
-    even_raw_math = final_cost / peoples
-    return even_raw_math
+    # insert logic from WhoPays_CurrencyRoundingExperiment
+    BillMath = round(Decimal(bill), 2)
+    TipDec = Decimal(tip)
+    TipMath = ((TipDec + 100) / 100)
+    PplMath = Decimal(peoples)
+    MathCost_Rounded = round((BillMath * TipMath), 2)
+    EachPays = round((MathCost_Rounded / PplMath), 2)
+    # function returs a list: Amount everyone pays, the bill, and the value of the tip
+    PayList = [EachPays, (EachPays * PplMath), ((EachPays * PplMath) - BillMath)]
+    return PayList
 
 
 def Click_EvenSplit_Btn():
-    # for EvenSplit; bill(f), tip(i), peoples(i)
     bill = float(EntryEvenBill.get())
     tip = float(EntryEvenTip.get())
     peoples = float(EntryEvenPeeps.get())
-    EvenTempFlt = EvenSplit(bill, tip, peoples)
-    EvenFinal = RoundItUp(EvenTempFlt)
-    LblEvenResult.config(text=("Each person pays: $" + str(EvenFinal)))
-
+    EvenSplitResults = EvenSplit(bill, tip, peoples)
+    LblEvenResultPays.config(text=("Each person pays $" + str(EvenSplitResults[0])))
+    LblEvenResultTotal.config(text=("The total cost is $" + str(EvenSplitResults[1])))
+    LblEvenResultTipVal.config(text=("Write in a tip for $" + str(EvenSplitResults[2])))
 
 
 
@@ -68,8 +73,12 @@ EntryEvenPeeps = ttk.Entry(TabEven, justify=LEFT)
 EntryEvenPeeps.place(x=200, y=128)
 EvenSplit_GO = ttk.Button(TabEven, text="Split!", command=Click_EvenSplit_Btn)
 EvenSplit_GO.place(x=32, y=160)
-LblEvenResult = ttk.Label(TabEven, text="Each person pays: $")
-LblEvenResult.place(x=32, y=192)
+LblEvenResultPays = ttk.Label(TabEven, text="Each person pays $")
+LblEvenResultPays.place(x=32, y=192)
+LblEvenResultTotal = ttk.Label(TabEven, text="The total cost is $")
+LblEvenResultTotal.place(x=32, y=224)
+LblEvenResultTipVal = ttk.Label(TabEven, text="Write in a tip for $")
+LblEvenResultTipVal.place(x=32, y=256)
 
 # Fill interface for Custom-split tab
 ttk.Label(TabCustom, text="Set each person's percentage").grid(column=0, row=0, padx=32, pady=32)
